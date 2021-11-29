@@ -1,0 +1,4 @@
+rootProject.name = 'ktapo'
+include 'tapo-client'
+include 'ktapo-server'
+

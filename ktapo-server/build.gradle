@@ -1,0 +1,60 @@
+plugins {
+    id 'com.google.protobuf' version '0.8.17'
+    id 'org.jetbrains.kotlin.jvm'
+    id 'java'
+}
+
+group 'cz.merton'
+version '1.0-SNAPSHOT'
+
+ext {
+    grpcKotlinVersion = '1.2.0'
+    grpcVersion = '1.42.0'
+    protobufVersion = '3.19.1'
+}
+
+repositories {
+    mavenCentral()
+    mavenCentral()
+}
+
+protobuf {
+    protoc { artifact = "com.google.protobuf:protoc:$protobufVersion" }
+    plugins {
+        javalite { artifact = "com.google.protobuf:protoc-gen-javalite:$protobufVersion" }
+        grpc { artifact = "io.grpc:protoc-gen-grpc-java:$grpcVersion" }
+        grpckt { artifact = "io.grpc:protoc-gen-grpc-kotlin:$grpcKotlinVersion:jdk7@jar" }
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java { option 'lite' }
+            }
+            task.plugins {
+                grpc { option 'lite' }
+                grpckt { option 'lite' }
+            }
+        }
+    }
+}
+
+sourceSets {
+    main.java.srcDirs("build/generated/source/proto/main/grpc")
+    main.java.srcDirs("build/generated/source/proto/main/java")
+    main.proto.srcDirs("src/main/proto")
+}
+
+
+dependencies {
+    implementation "io.grpc:grpc-kotlin-stub:$grpcKotlinVersion"
+    implementation "io.grpc:grpc-protobuf:$grpcVersion"
+    implementation "com.google.protobuf:protobuf-kotlin:$protobufVersion"
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+test {
+    useJUnitPlatform()
+}
